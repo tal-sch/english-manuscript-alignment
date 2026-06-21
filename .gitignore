@@ -1,0 +1,17 @@
+# Datasets
+IAM_Data/
+YOLO_Dataset/
+
+# YOLO outputs and runs
+runs/
+
+# Weights
+*.pt
+
+# Test files
+test_line_*.jpg
+
+# Python
+__pycache__/
+*.pyc
+.env
