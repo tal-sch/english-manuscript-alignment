@@ -10,6 +10,7 @@ runs/
 
 # Test files
 test_line_*.jpg
+synthetic_line_*.jpg
 
 # Python
 __pycache__/

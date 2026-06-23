@@ -34,8 +34,8 @@ class SiameseNetwork(nn.Module):
 # 2. SYSTEM SETUP & MODEL LOADING
 # ==========================================
 # --- UPDATE THESE PATHS IF NEEDED ---
-YOLO_WEIGHTS = r"runs\detect\iam_word_slicer\weights\best.pt"
-SIAMESE_WEIGHTS = r"siamese_iam_best.pt"
+YOLO_WEIGHTS = r"runs\detect\iam_word_slicer-2\weights\best.pt"
+SIAMESE_WEIGHTS = r"siamese_triplet_best.pt"
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Loading models to {device}...")

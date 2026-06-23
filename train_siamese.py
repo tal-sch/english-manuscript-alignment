@@ -9,55 +9,53 @@ from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms
 from PIL import Image
 
-DATA_DIR = r"C:\Users\Tal Sch\Desktop\english_manuscript_alignment\IAM_Data"
+IAM_DATA_DIR = r"C:\Users\Tal Sch\Desktop\english_manuscript_alignment\IAM_Data"
+SYNTHETIC_DATA_DIR = r"C:\Users\Tal Sch\Desktop\english_manuscript_alignment\Synthetic_Data\words"
 
-class IAMSiameseDataset(Dataset):
-    def __init__(self, data_dir, transform=None, epoch_length=10000):
-        self.data_dir = data_dir
+class CombinedSiameseDataset(Dataset):
+    def __init__(self, iam_dir, synthetic_dir, transform=None, epoch_length=20000):
         self.transform = transform
         self.epoch_length = epoch_length
-        
-        words_txt_path = os.path.join(data_dir, "ascii", "words.txt")
-        if not os.path.exists(words_txt_path):
-            # Check the old kaggle location if not found in ascii
-            words_txt_path = os.path.join(data_dir, "words.txt")
-            
         raw_classes = {}
         
+        # 1. Parse IAM
         print("Parsing IAM words.txt...")
-        with open(words_txt_path, 'r', encoding='utf-8') as f:
-            for line in f:
-                # skip comments
-                if line.startswith('#') or not line.strip():
-                    continue
-                
-                parts = line.strip().split()
-                if len(parts) >= 9:
-                    img_id = parts[0]
-                    status = parts[1]
-                    word_text = " ".join(parts[8:])
-                    
-                    if status != 'ok':
-                        continue
-                        
-                    # Calculate path
-                    id_parts = img_id.split('-')
-                    if len(id_parts) >= 2:
-                        folder1 = id_parts[0]
-                        folder2 = f"{id_parts[0]}-{id_parts[1]}"
-                        img_path = os.path.join(data_dir, "words", folder1, folder2, f"{img_id}.png")
-                        
-                        if os.path.exists(img_path):
-                            if word_text not in raw_classes:
-                                raw_classes[word_text] = []
-                            raw_classes[word_text].append(img_path)
+        words_txt_path = os.path.join(iam_dir, "ascii", "words.txt")
+        if os.path.exists(words_txt_path):
+            with open(words_txt_path, 'r', encoding='utf-8') as f:
+                for line in f:
+                    if line.startswith('#') or not line.strip(): continue
+                    parts = line.strip().split()
+                    if len(parts) >= 9 and parts[1] == 'ok':
+                        img_id = parts[0]
+                        word_text = " ".join(parts[8:])
+                        id_parts = img_id.split('-')
+                        if len(id_parts) >= 2:
+                            folder1 = id_parts[0]
+                            folder2 = f"{id_parts[0]}-{id_parts[1]}"
+                            img_path = os.path.join(iam_dir, "words", folder1, folder2, f"{img_id}.png")
+                            if os.path.exists(img_path):
+                                if word_text not in raw_classes:
+                                    raw_classes[word_text] = []
+                                raw_classes[word_text].append(img_path)
+                                
+        # 2. Parse Synthetic Data
+        print("Parsing Synthetic Data...")
+        if os.path.exists(synthetic_dir):
+            for word_dir in os.listdir(synthetic_dir):
+                full_dir = os.path.join(synthetic_dir, word_dir)
+                if os.path.isdir(full_dir):
+                    for img_file in os.listdir(full_dir):
+                        if img_file.endswith('.png'):
+                            if word_dir not in raw_classes:
+                                raw_classes[word_dir] = []
+                            raw_classes[word_dir].append(os.path.join(full_dir, img_file))
                             
-        # Filter to keep only words with at least 2 examples
         self.classes = {word: paths for word, paths in raw_classes.items() if len(paths) >= 2}
         self.class_names = list(self.classes.keys())
         
         total_images = sum(len(paths) for paths in self.classes.values())
-        print(f"Success! Found {len(self.class_names)} unique English words with multiple examples.")
+        print(f"Success! Found {len(self.class_names)} unique English words.")
         print(f"Total usable cropped images for pairs: {total_images}")
 
     def __len__(self):
@@ -138,14 +136,19 @@ def main():
         transforms.ToTensor()
     ])
     
-    dataset = IAMSiameseDataset(data_dir=DATA_DIR, transform=siamese_transforms, epoch_length=20000)
+    dataset = CombinedSiameseDataset(
+        iam_dir=IAM_DATA_DIR, 
+        synthetic_dir=SYNTHETIC_DATA_DIR, 
+        transform=siamese_transforms, 
+        epoch_length=20000
+    )
     train_dataloader = DataLoader(dataset, shuffle=True, num_workers=4, batch_size=BATCH_SIZE)
     
     net = SiameseNetwork().to(device)
     criterion = ContrastiveLoss(margin=2.0)
     optimizer = optim.Adam(net.parameters(), lr=LEARNING_RATE)
     
-    print("\nStarting Phase 3 Training (Siamese Network)...")
+    print("\nStarting Phase 3 Training (Siamese Network with Synthetic Data)...")
     
     for epoch in range(EPOCHS):
         start_time = time.time()
@@ -171,10 +174,10 @@ def main():
         
         print(f"--- Epoch {epoch+1} Completed in {epoch_time:.1f}s | Average Loss: {avg_loss:.4f} ---")
         
-        # Save model after each epoch in case of interruption
-        torch.save(net.state_dict(), "siamese_iam_best.pt")
+        # Save model after each epoch
+        torch.save(net.state_dict(), "siamese_iam_synthetic_best.pt")
         
-    print("\nTraining Complete! Model saved as 'siamese_iam_best.pt'")
+    print("\nTraining Complete! Model saved as 'siamese_iam_synthetic_best.pt'")
 
 if __name__ == '__main__':
     main()
