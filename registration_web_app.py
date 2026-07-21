@@ -19,7 +19,7 @@ from manuscript_registration.inference import (
 
 
 DEFAULT_CHECKPOINT = Path(
-    os.environ.get("REGISTRATION_CHECKPOINT", "registration_runs/identity_finetune/best.pt")
+    os.environ.get("REGISTRATION_CHECKPOINT", "models/manuscript-registration-best.pt")
 )
 
 

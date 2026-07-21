@@ -158,7 +158,7 @@ Writer-disjoint IAM test set:
 
 ```powershell
 .venv\Scripts\python.exe evaluate_registration.py `
-  registration_runs/identity_finetune/best.pt `
+  models/manuscript-registration-best.pt `
   --batch-size 32
 ```
 
@@ -166,7 +166,7 @@ Held-out words and held-out font:
 
 ```powershell
 .venv\Scripts\python.exe evaluate_cross_font.py `
-  registration_runs/identity_finetune/best.pt `
+  models/manuscript-registration-best.pt `
   --samples 1000 `
   --batch-size 32
 ```
@@ -180,20 +180,20 @@ Real IAM lines with identical transcriptions from different test writers:
 
 ```powershell
 .venv\Scripts\python.exe evaluate_real_pairs.py `
-  registration_runs/identity_finetune/best.pt
+  models/manuscript-registration-best.pt
 ```
 
 Exact source-equals-target behavior:
 
 ```powershell
 .venv\Scripts\python.exe evaluate_identity.py `
-  registration_runs/identity_finetune/best.pt
+  models/manuscript-registration-best.pt
 ```
 
 ### Final results and model selection
 
-The selected checkpoint is `registration_runs/identity_finetune/best.pt`. It
-slightly improves synthetic-warp IAM and cross-font EPE while reducing unwanted
+The selected checkpoint is committed as `models/manuscript-registration-best.pt`.
+It slightly improves synthetic-warp IAM and cross-font EPE while reducing unwanted
 motion on identical input images by 86.19% compared with the original mixed model.
 
 | Test set and metric | Identity baseline | Final model |
@@ -218,7 +218,7 @@ Render qualitative test examples:
 
 ```powershell
 .venv\Scripts\python.exe visualize_registration.py `
-  registration_runs/identity_finetune/best.pt `
+  models/manuscript-registration-best.pt `
   --count 8
 ```
 
@@ -231,7 +231,7 @@ examples are under `registration_runs/identity_finetune`,
 
 ```powershell
 .venv\Scripts\python.exe align_images.py `
-  source_line.png target_line.png registration_runs/identity_finetune/best.pt
+  source_line.png target_line.png models/manuscript-registration-best.pt
 ```
 
 The command writes normalized source and target images, `aligned.png`, a colored
