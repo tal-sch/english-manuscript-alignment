@@ -16,3 +16,13 @@ synthetic_line_*.jpg
 __pycache__/
 *.pyc
 .env
+.venv/
+.uv-cache/
+tmp_pycache/
+
+# Registration outputs
+registration_runs/
+alignment_output/
+
+# Local web-app logs
+registration_web_app_*.log

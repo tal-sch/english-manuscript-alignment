@@ -1,0 +1,8 @@
+-r requirements-registration.txt
+torchvision>=0.19
+ultralytics>=8.3
+opencv-python>=4.10
+matplotlib>=3.9
+lxml>=5.0
+PyYAML>=6.0
+tqdm>=4.66
