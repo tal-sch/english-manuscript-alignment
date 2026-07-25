@@ -1,0 +1,18 @@
+[project]
+name = "manuscript-line-registration"
+version = "0.1.0"
+description = "Patch-correlation neural spatial registration for handwritten text lines"
+requires-python = ">=3.10"
+dependencies = [
+    "torch>=2.4",
+    "numpy>=1.26",
+    "Pillow>=10.0",
+]
+
+[project.optional-dependencies]
+app = ["gradio>=6.0"]
+test = ["pytest>=8.0"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
