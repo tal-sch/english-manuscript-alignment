@@ -293,21 +293,6 @@ and real-pair landmarks.
 These limitations are why flow and word-landmark error are more informative than
 pixel similarity for cross-style evaluation.
 
-## Legacy word-sequence baseline
-
-The original YOLO + Siamese + Smith-Waterman implementation remains in the
-repository:
-
-1. `prepare_yolo_dataset.py`
-2. `train_yolo.py`
-3. `train_siamese_triplet.py`
-4. `english_alignment_web_app.py`
-
-It is retained as a useful design baseline and possible future source of
-high-confidence word anchors. It is not used as the main numerical registration
-baseline because it returns word correspondences rather than a warped image or
-dense displacement field.
-
 ## Reference
 
 [1] B. Madi, A. Droby, and J. El-Sana, "Textline alignment on the image domain,"

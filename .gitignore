@@ -1,6 +1,7 @@
 # Datasets
 IAM_Data/
 YOLO_Dataset/
+Synthetic_Data/
 
 # YOLO outputs and runs
 runs/
